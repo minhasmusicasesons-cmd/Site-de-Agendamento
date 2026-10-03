@@ -1,0 +1,347 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Agende seu atendimento</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700;800&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#fff;--fg:#0a0a0f;--muted:#5b6475;--card:#f3f6fc;--line:#dbe3f2;--blue:#2f7bff;--blue2:#1b4fd8;--black:#05060a;--white:#fff;
+box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#05060a;--fg:#fff;--muted:#9aa5bd;--card:#0d1220;--line:#1c2742}}
+:root[data-theme="dark"]{--bg:#05060a;--fg:#fff;--muted:#9aa5bd;--card:#0d1220;--line:#1c2742}
+html{scroll-behavior:smooth;scroll-padding-top:calc(76px + env(safe-area-inset-top,0px))}
+*,*::before,*::after{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--fg);font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,sans-serif;line-height:1.6}
+a{color:inherit;text-decoration:none}
+.wrap{width:min(1100px,100% - 2.5rem);margin-inline:auto}
+section{padding:5.5rem 0}
+h1,h2,h3{line-height:1.15;margin:0 0 1rem}
+h2{font-size:clamp(1.8rem,4vw,2.6rem);font-weight:800}
+.tag{color:var(--blue);font-weight:700;letter-spacing:.14em;font-size:.78rem;text-transform:uppercase}
+.btn{display:inline-block;border:0;cursor:pointer;font:inherit;font-weight:700;padding:.95rem 1.8rem;border-radius:999px;background:linear-gradient(135deg,var(--blue),var(--blue2));color:#fff;box-shadow:0 10px 30px -10px var(--blue);transition:transform .25s,box-shadow .25s}
+.btn:hover{transform:translateY(-3px);box-shadow:0 16px 36px -10px var(--blue)}
+.btn.ghost{background:transparent;border:1.5px solid #ffffff55;box-shadow:none}
+/* header */
+header{position:fixed;inset:0 0 auto 0;z-index:50;background:#05060acc;backdrop-filter:blur(12px);border-bottom:1px solid #ffffff14;padding-top:env(safe-area-inset-top,0px);color:#fff}
+.nav{display:flex;align-items:center;justify-content:space-between;height:68px}
+.logo{display:flex;align-items:center;gap:.6rem;font-weight:800;font-size:1.15rem}
+.logo svg{width:34px;height:34px}
+nav ul{display:flex;gap:1.8rem;list-style:none;margin:0;padding:0;align-items:center}
+nav a{font-size:.95rem;opacity:.85;transition:opacity .2s,color .2s}
+nav a:hover{opacity:1;color:var(--blue)}
+.burger{display:none;background:none;border:0;color:#fff;font-size:1.7rem;cursor:pointer}
+/* hero */
+.hero{background:radial-gradient(900px 500px at 80% 10%,#1b4fd855,transparent 60%),var(--black);color:#fff;min-height:100svh;display:flex;align-items:center;padding-top:110px}
+.hero h1{font-size:clamp(2.4rem,7vw,4.6rem);font-weight:800;max-width:15ch}
+.hero h1 span{color:var(--blue)}
+.hero p{max-width:52ch;color:#b8c3dd;font-size:1.15rem}
+.hero .cta{display:flex;gap:1rem;flex-wrap:wrap;margin-top:2rem}
+/* about */
+.about{display:grid;grid-template-columns:1fr 1.2fr;gap:3.5rem;align-items:center}
+.photo{aspect-ratio:4/5;border-radius:24px;overflow:hidden;background:linear-gradient(160deg,#0d1220,#1b4fd8);box-shadow:0 30px 60px -30px var(--blue);position:relative}
+.photo svg{width:100%;height:100%}
+.stats{display:flex;gap:2rem;margin-top:1.6rem;flex-wrap:wrap}
+.stats b{display:block;font-size:2rem;color:var(--blue)}
+.stats span{color:var(--muted);font-size:.9rem}
+/* results */
+.results{background:var(--card)}
+.grid3{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:1.4rem;margin-top:2rem}
+.card{background:var(--bg);border:1px solid var(--line);border-radius:20px;padding:1.6rem;transition:transform .3s,border-color .3s}
+.card:hover{transform:translateY(-6px);border-color:var(--blue)}
+.stars{color:var(--blue);letter-spacing:.15em}
+.who{font-weight:700;margin-top:1rem}.who small{display:block;color:var(--muted);font-weight:400}
+/* booking */
+.book{background:var(--black);color:#fff}
+.book .box{display:grid;grid-template-columns:1.3fr 1fr;gap:2.5rem;margin-top:2rem}
+.panel{background:#0d1220;border:1px solid #1c2742;border-radius:22px;padding:1.6rem}
+.panel h3{font-size:1.05rem}
+.days{display:flex;gap:.6rem;overflow-x:auto;padding-bottom:.6rem}
+.chip{flex:0 0 auto;min-width:64px;text-align:center;border:1.5px solid #243253;border-radius:14px;background:transparent;color:#fff;padding:.6rem .5rem;cursor:pointer;font:inherit;transition:.2s}
+.chip small{display:block;font-size:.7rem;text-transform:uppercase;color:#9aa5bd}
+.chip b{font-size:1.2rem}
+.chip:hover:not(:disabled){border-color:var(--blue)}
+.chip.on{background:var(--blue);border-color:var(--blue)}.chip.on small{color:#e6eeff}
+.chip:disabled{opacity:.3;cursor:not-allowed}
+.slots{display:grid;grid-template-columns:repeat(auto-fill,minmax(86px,1fr));gap:.6rem;margin-top:.6rem}
+.slots .chip{padding:.7rem .4rem}
+.slots .chip.busy{text-decoration:line-through}
+.legend{font-size:.8rem;color:#9aa5bd;margin-top:1rem}
+label{display:block;font-size:.85rem;color:#b8c3dd;margin:1rem 0 .35rem}
+input[type=text],input[type=tel]{width:100%;padding:.9rem 1rem;border-radius:12px;border:1.5px solid #243253;background:#05060a;color:#fff;font:inherit}
+input:focus{outline:none;border-color:var(--blue)}
+.sel{margin:1rem 0;padding:.8rem 1rem;border-radius:12px;background:#05060a;border:1px dashed #243253;font-size:.95rem}
+.err{color:#ff8a8a;font-size:.85rem;min-height:1.2em;margin-top:.6rem}
+.hp{position:absolute;left:-9999px;height:0;overflow:hidden}
+.ok{display:none;text-align:center}
+.ok.show{display:block}
+.ok .btn{margin-top:1rem}
+/* footer */
+footer{background:var(--black);color:#fff;border-top:1px solid #ffffff14;padding:3rem 0 2rem;text-align:center}
+.social{display:flex;gap:.8rem;justify-content:center;margin:1.2rem 0;flex-wrap:wrap}
+.social a{width:46px;height:46px;border-radius:50%;border:1.5px solid #243253;display:grid;place-items:center;transition:.25s}
+.social a:hover{background:var(--blue);border-color:var(--blue);transform:translateY(-4px)}
+.social svg{width:20px;height:20px;fill:#fff}
+footer p{color:#8794b0;font-size:.85rem;margin:.3rem 0}
+/* animations */
+.rv{opacity:0;transform:translateY(34px);transition:opacity .8s ease,transform .8s ease}
+.rv.in{opacity:1;transform:none}
+@media (prefers-reduced-motion:reduce){.rv{opacity:1;transform:none;transition:none}html{scroll-behavior:auto}}
+@media (max-width:860px){
+.burger{display:block}
+nav ul{position:absolute;top:calc(68px + env(safe-area-inset-top,0px));left:0;right:0;flex-direction:column;background:#05060a;padding:1.2rem 0;gap:1.1rem;display:none;border-bottom:1px solid #ffffff14}
+nav ul.open{display:flex}
+.about,.book .box{grid-template-columns:1fr}
+.photo{max-width:340px;margin-inline:auto}
+section{padding:4rem 0}
+}
+</style>
+</head>
+<body>
+
+<header>
+<div class="wrap nav">
+  <a href="#inicio" class="logo" aria-label="Início">
+    <svg viewBox="0 0 40 40" aria-hidden="true"><rect width="40" height="40" rx="11" fill="#2f7bff"/><path d="M12 29V11h8.5a5.5 5.5 0 0 1 0 11H17" fill="none" stroke="#fff" stroke-width="3.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    <span id="brand">Seu Nome</span>
+  </a>
+  <nav aria-label="Principal">
+    <button class="burger" id="burger" aria-label="Abrir menu" aria-expanded="false">☰</button>
+    <ul id="menu">
+      <li><a href="#inicio">Início</a></li>
+      <li><a href="#sobre">Sobre Mim</a></li>
+      <li><a href="#resultados">Resultados</a></li>
+      <li><a href="#agendar" class="btn" style="padding:.6rem 1.3rem;opacity:1">Agendar</a></li>
+    </ul>
+  </nav>
+</div>
+</header>
+
+<main>
+<section class="hero" id="inicio">
+  <div class="wrap">
+    <p class="tag rv">Atendimento profissional</p>
+    <h1 class="rv">Transforme sua rotina com <span>resultados reais</span>.</h1>
+    <p class="rv">Atendimento personalizado, com método comprovado e horários flexíveis. Escolha o melhor dia e hora e garanta sua vaga em poucos cliques.</p>
+    <div class="cta rv">
+      <a href="#agendar" class="btn">Agendar agora</a>
+      <a href="#sobre" class="btn ghost">Conhecer meu trabalho</a>
+    </div>
+  </div>
+</section>
+
+<section id="sobre">
+  <div class="wrap about">
+    <div class="photo rv" role="img" aria-label="Foto do profissional (substitua pela sua)">
+      <svg viewBox="0 0 400 500" aria-hidden="true"><circle cx="200" cy="190" r="72" fill="#ffffff22"/><path d="M60 500c0-100 60-160 140-160s140 60 140 160z" fill="#ffffff22"/></svg>
+    </div>
+    <div class="rv">
+      <p class="tag">Sobre mim</p>
+      <h2>Prazer, eu sou <span id="nome2">Seu Nome</span>.</h2>
+      <p style="color:var(--muted)">Profissional dedicado, com mais de 10 anos de experiência ajudando pessoas a alcançarem seus objetivos com planejamento, ética e acompanhamento próximo. Acredito em um atendimento humano, transparente e focado no que realmente importa para você.</p>
+      <p style="color:var(--muted)">Cada cliente recebe uma estratégia sob medida, com metas claras e resultados mensuráveis.</p>
+      <div class="stats">
+        <div><b>10+</b><span>anos de experiência</span></div>
+        <div><b>500+</b><span>clientes atendidos</span></div>
+        <div><b>98%</b><span>de satisfação</span></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="results" id="resultados">
+  <div class="wrap">
+    <p class="tag rv">Resultados</p>
+    <h2 class="rv">O que meus clientes dizem</h2>
+    <div class="grid3">
+      <article class="card rv"><div class="stars">★★★★★</div><p>“Atendimento excepcional. Em poucas semanas já percebi uma evolução enorme. Recomendo de olhos fechados!”</p><div class="who">Mariana S.<small>Cliente desde 2023</small></div></article>
+      <article class="card rv"><div class="stars">★★★★★</div><p>“Profissional pontual, claro e muito competente. O agendamento online facilitou demais minha rotina.”</p><div class="who">Carlos E.<small>Cliente desde 2022</small></div></article>
+      <article class="card rv"><div class="stars">★★★★★</div><p>“Superou minhas expectativas. Me senti ouvida e acompanhada em cada etapa do processo.”</p><div class="who">Juliana P.<small>Cliente desde 2024</small></div></article>
+    </div>
+  </div>
+</section>
+
+<section class="book" id="agendar">
+  <div class="wrap">
+    <p class="tag rv">Agendamento</p>
+    <h2 class="rv">Escolha o dia e o horário</h2>
+    <div class="box">
+      <div class="panel rv">
+        <h3>1. Selecione o dia</h3>
+        <div class="days" id="days" role="listbox" aria-label="Dias disponíveis"></div>
+        <h3 style="margin-top:1.2rem">2. Selecione o horário</h3>
+        <div class="slots" id="slots"></div>
+        <p class="legend">Horários riscados já estão ocupados. Domingos fechado · Sábados até 13h.</p>
+      </div>
+      <div class="panel rv">
+        <form id="form" novalidate autocomplete="off">
+          <h3>3. Seus dados</h3>
+          <div class="sel" id="sel">Nenhum horário selecionado</div>
+          <label for="nome">Nome completo</label>
+          <input type="text" id="nome" maxlength="80" required placeholder="Seu nome" autocomplete="name">
+          <label for="tel">Telefone (WhatsApp)</label>
+          <input type="tel" id="tel" maxlength="20" required placeholder="(11) 99999-9999" inputmode="tel" autocomplete="tel">
+          <div class="hp" aria-hidden="true"><label>Não preencha<input type="text" id="site" tabindex="-1" autocomplete="off"></label></div>
+          <div class="err" id="err" role="alert"></div>
+          <button class="btn" type="submit" style="width:100%">Confirmar agendamento</button>
+        </form>
+        <div class="ok" id="ok">
+          <h3>Quase lá! ✅</h3>
+          <p style="color:#b8c3dd">Horário reservado. Toque abaixo para enviar a confirmação por WhatsApp ao profissional.</p>
+          <a class="btn" id="wa" target="_blank" rel="noopener noreferrer">Enviar pelo WhatsApp</a>
+          <p><button class="btn ghost" id="novo" type="button" style="margin-top:1rem;padding:.6rem 1.2rem">Novo agendamento</button></p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+</main>
+
+<footer>
+  <div class="wrap">
+    <div class="logo" style="justify-content:center"><span id="brand2">Seu Nome</span></div>
+    <div class="social">
+      <a href="#" aria-label="Instagram" rel="noopener"><svg viewBox="0 0 24 24"><path d="M7 2h10a5 5 0 0 1 5 5v10a5 5 0 0 1-5 5H7a5 5 0 0 1-5-5V7a5 5 0 0 1 5-5zm0 2a3 3 0 0 0-3 3v10a3 3 0 0 0 3 3h10a3 3 0 0 0 3-3V7a3 3 0 0 0-3-3zm5 3.5A4.5 4.5 0 1 1 7.5 12 4.5 4.5 0 0 1 12 7.5zm0 2A2.5 2.5 0 1 0 14.5 12 2.5 2.5 0 0 0 12 9.5zM17.3 5.8a1 1 0 1 1-1 1 1 1 0 0 1 1-1z"/></svg></a>
+      <a href="#" aria-label="Facebook" rel="noopener"><svg viewBox="0 0 24 24"><path d="M14 8V6.5c0-.8.2-1.2 1.3-1.2H17V2h-2.6C11.5 2 10 3.7 10 6.2V8H7.5v3.3H10V22h4V11.3h2.7L17 8z"/></svg></a>
+      <a href="#" aria-label="LinkedIn" rel="noopener"><svg viewBox="0 0 24 24"><path d="M4.5 9H8v11H4.5zM6.2 3.5a2 2 0 1 1 0 4 2 2 0 0 1 0-4zM10 9h3.3v1.5c.5-.9 1.7-1.8 3.4-1.8 3.5 0 4.1 2.300 4.100 5.300V20h-3.500v-5.200c0-1.200 0-2.800-1.700-2.800s-2 1.300-2 2.700V20H10z"/></svg></a>
+      <a href="#" id="waFoot" aria-label="WhatsApp" target="_blank" rel="noopener noreferrer"><svg viewBox="0 0 24 24"><path d="M12 2a10 10 0 0 0-8.600 15L2 22l5.200-1.400A10 10 0 1 0 12 2zm0 2a8 8 0 1 1-4.200 14.800l-.3-.2-3 .8.8-2.900-.2-.3A8 8 0 0 1 12 4zm-3 3.500c-.3 0-.7.1-1 .5s-1 1-1 2.400 1 2.800 1.200 3c.1.200 2 3.100 4.900 4.300 2.400 1 2.900.8 3.400.7s1.700-.7 1.900-1.400.2-1.300.2-1.400-.2-.2-.5-.4l-1.800-.9c-.2-.1-.4-.1-.6.100l-.8 1c-.1.200-.3.200-.5.100a6.600 6.600 0 0 1-3.300-2.900c-.2-.4.200-.4.700-1.300.1-.2 0-.3 0-.5l-.8-1.900c-.2-.5-.4-.4-.6-.4z"/></svg></a>
+    </div>
+    <p>© <span id="ano"></span> Todos os direitos reservados.</p>
+    <p>Seus dados são usados apenas para confirmar o agendamento.</p>
+  </div>
+</footer>
+
+<script>
+/* ===== CONFIGURAÇÃO — edite aqui ===== */
+const CFG = {
+  nome: "Seu Nome",
+  servico: "Atendimento",
+  whatsapp: "5511999999999",   // DDI + DDD + número, somente dígitos
+  diasAhead: 14,
+  // [início, fim) em horas, por dia da semana (0=Dom). null = fechado
+  horario: {0:null,1:[9,18],2:[9,18],3:[9,18],4:[9,18],5:[9,18],6:[9,13]}
+};
+/* ===================================== */
+const $ = id => document.getElementById(id);
+const DIAS = ["Dom","Seg","Ter","Qua","Qui","Sex","Sáb"];
+const pad = n => String(n).padStart(2,"0");
+const key = d => d.getFullYear()+"-"+pad(d.getMonth()+1)+"-"+pad(d.getDate());
+const br  = d => pad(d.getDate())+"/"+pad(d.getMonth()+1)+"/"+d.getFullYear();
+
+["brand","brand2","nome2"].forEach(i => $(i).textContent = CFG.nome);
+$("ano").textContent = new Date().getFullYear();
+$("waFoot").href = "https://wa.me/" + CFG.whatsapp;
+
+/* Menu mobile */
+$("burger").onclick = () => {
+  const o = $("menu").classList.toggle("open");
+  $("burger").setAttribute("aria-expanded", o);
+};
+$("menu").addEventListener("click", e => { if (e.target.closest("a")) $("menu").classList.remove("open"); });
+
+/* Armazenamento (reservas locais) */
+function loadBooked(){ try { return JSON.parse(localStorage.getItem("ag_reservas")||"[]"); } catch(e){ return []; } }
+function saveBooked(a){ try { localStorage.setItem("ag_reservas", JSON.stringify(a)); } catch(e){} }
+let booked = loadBooked();
+
+/* Ocupação simulada (demo) — troque por dados reais de um backend */
+function demoBusy(d,h){ return ((d.getDate()*7 + h*3 + d.getMonth()) % 5) === 0; }
+function isBusy(d,h){ return demoBusy(d,h) || booked.includes(key(d)+"|"+h); }
+
+function hoursFor(d){
+  const r = CFG.horario[d.getDay()]; if (!r) return [];
+  const out = [], now = new Date();
+  for (let h=r[0]; h<r[1]; h++){
+    const t = new Date(d); t.setHours(h,0,0,0);
+    if (t > now) out.push(h);
+  }
+  return out;
+}
+
+let selDay = null, selHour = null;
+const daysEl = $("days"), slotsEl = $("slots");
+
+function buildDays(){
+  daysEl.textContent = "";
+  const base = new Date(); base.setHours(0,0,0,0);
+  for (let i=0; i<CFG.diasAhead; i++){
+    const d = new Date(base); d.setDate(base.getDate()+i);
+    const hrs = hoursFor(d).filter(h => !isBusy(d,h));
+    const b = document.createElement("button");
+    b.type = "button"; b.className = "chip";
+    b.disabled = hrs.length === 0;
+    const s = document.createElement("small"); s.textContent = DIAS[d.getDay()];
+    const n = document.createElement("b"); n.textContent = pad(d.getDate());
+    const m = document.createElement("small"); m.textContent = pad(d.getMonth()+1)+"/"+d.getFullYear().toString().slice(2);
+    b.append(s,n,m);
+    if (selDay && key(selDay) === key(d)) b.classList.add("on");
+    b.onclick = () => { selDay = d; selHour = null; buildDays(); buildSlots(); updateSel(); };
+    daysEl.appendChild(b);
+  }
+}
+function buildSlots(){
+  slotsEl.textContent = "";
+  if (!selDay){ slotsEl.textContent = "Escolha um dia acima."; slotsEl.style.color = "#9aa5bd"; return; }
+  slotsEl.style.color = "";
+  hoursFor(selDay).forEach(h => {
+    const busy = isBusy(selDay,h);
+    const b = document.createElement("button");
+    b.type = "button"; b.className = "chip" + (busy ? " busy" : "") + (selHour === h ? " on" : "");
+    b.textContent = pad(h)+":00"; b.disabled = busy;
+    b.onclick = () => { selHour = h; buildSlots(); updateSel(); };
+    slotsEl.appendChild(b);
+  });
+}
+function updateSel(){
+  $("sel").textContent = (selDay && selHour !== null)
+    ? "📅 " + DIAS[selDay.getDay()] + ", " + br(selDay) + " às " + pad(selHour) + ":00"
+    : "Nenhum horário selecionado";
+}
+buildDays(); buildSlots();
+
+/* Formulário (validação + sanitização) */
+$("tel").addEventListener("input", e => {
+  let v = e.target.value.replace(/\D/g,"").slice(0,11);
+  if (v.length > 6) v = "("+v.slice(0,2)+") "+v.slice(2,v.length>10?7:6)+"-"+v.slice(v.length>10?7:6);
+  else if (v.length > 2) v = "("+v.slice(0,2)+") "+v.slice(2);
+  e.target.value = v;
+});
+$("form").addEventListener("submit", e => {
+  e.preventDefault();
+  const err = $("err"); err.textContent = "";
+  if ($("site").value) return; // honeypot (bots)
+  const nome = $("nome").value.replace(/\s+/g," ").trim();
+  const tel = $("tel").value.replace(/\D/g,"");
+  if (!selDay || selHour === null){ err.textContent = "Selecione um dia e um horário."; return; }
+  if (!/^[\p{L}\s'.-]{2,80}$/u.test(nome)){ err.textContent = "Informe um nome válido (apenas letras)."; return; }
+  if (tel.length < 10 || tel.length > 11){ err.textContent = "Informe um telefone válido com DDD."; return; }
+  if (isBusy(selDay, selHour)){ err.textContent = "Esse horário acabou de ser ocupado. Escolha outro."; return; }
+
+  booked.push(key(selDay)+"|"+selHour); saveBooked(booked);
+  const msg = "Novo agendamento 📅\n\n"
+    + "Serviço: " + CFG.servico + "\n"
+    + "Cliente: " + nome + "\n"
+    + "Telefone: " + $("tel").value + "\n"
+    + "Data: " + br(selDay) + " (" + DIAS[selDay.getDay()] + ")\n"
+    + "Horário: " + pad(selHour) + ":00";
+  $("wa").href = "https://wa.me/" + CFG.whatsapp + "?text=" + encodeURIComponent(msg);
+  $("form").style.display = "none"; $("ok").classList.add("show");
+  buildDays(); buildSlots();
+});
+$("novo").onclick = () => {
+  $("ok").classList.remove("show"); $("form").style.display = "";
+  $("form").reset(); selDay = null; selHour = null; updateSel(); buildDays(); buildSlots();
+};
+
+/* Animações ao rolar */
+const io = "IntersectionObserver" in window ? new IntersectionObserver(es => {
+  es.forEach(x => { if (x.isIntersecting){ x.target.classList.add("in"); io.unobserve(x.target); } });
+}, {threshold:.12}) : null;
+document.querySelectorAll(".rv").forEach((el,i) => {
+  el.style.transitionDelay = (i % 3) * 90 + "ms";
+  io ? io.observe(el) : el.classList.add("in");
+});
+</script>
+</body>
+</html>
